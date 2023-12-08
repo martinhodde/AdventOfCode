@@ -94,5 +94,5 @@ def solve_p2():
                    for i in range(0, len(seed_range_data), 2)]
     return min(seed_ranges_to_loc_ranges(seed_ranges, build_maps()))[0]
 
-print('Part 1: Lowest location number = ', solve_p1())
-print('Part 2: Lowest location number = ', solve_p2())
+print('Part 1: Lowest location number =', solve_p1())
+print('Part 2: Lowest location number =', solve_p2())

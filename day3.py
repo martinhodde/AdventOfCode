@@ -67,5 +67,5 @@ def solve_p2():
 
     return gear_ratio_sum
 
-print('Part 1 - Part number sum = ', solve_p1())
-print('Part 2 - Gear ratio sum = ', solve_p2())
+print('Part 1: Part number sum =', solve_p1())
+print('Part 2: Gear ratio sum =', solve_p2())

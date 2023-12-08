@@ -42,5 +42,5 @@ def solve_p2():
 
     return power_sum
 
-print('Part 1 - Game ID sum = ', solve_p1())
-print('Part 2 - Power sum = ', solve_p2())
+print('Part 1: Game ID sum =', solve_p1())
+print('Part 2: Power sum =', solve_p2())

@@ -58,5 +58,5 @@ def solve_p2():
     """
     return sum(map(get_calibration_value, map(preprocess_calibration_line, inputs)))
 
-print('Part 1 - Calibration sum = ', solve_p1())
-print('Part 2 - Calibration sum = ', solve_p2())
+print('Part 1: Calibration sum =', solve_p1())
+print('Part 2: Calibration sum =', solve_p2())
