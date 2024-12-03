@@ -13,6 +13,8 @@ pub fn get_solver_fns(idx: (u32, u32)) -> Result<fn(), &'static str> {
     match idx {
         (1, 1) => Ok(solutions::day1::solve_part_1),
         (1, 2) => Ok(solutions::day1::solve_part_2),
+        (2, 1) => Ok(solutions::day2::solve_part_1),
+        (2, 2) => Ok(solutions::day2::solve_part_2),
         _ => Err("Solver not yet implemented!"),
     }
 }
