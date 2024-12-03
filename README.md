@@ -1,2 +1,2 @@
-# Advent Of Code 2023 🎄
+# Advent Of Code 🎄
 Solutions to [Advent of Code](https://adventofcode.com/) puzzles.
