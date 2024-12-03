@@ -1,3 +1,5 @@
 inputs/
+target/
 __pycache__/
+Cargo.lock
 .DS_Store
