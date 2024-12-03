@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
+counter = "0.6.0"
 itertools = "0.13.0"
-nalgebra = "0.33.2"
