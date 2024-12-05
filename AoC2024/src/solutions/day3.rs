@@ -30,12 +30,11 @@ fn mul_sum_enabled() -> u32 {
     let mut sum = 0;
     let mut enabled = true;  // Multiplication is initially enabled
     for cap in re.captures_iter(lines) {
-        if enabled {
-            if let (Some(op1), Some(op2)) = (cap.name("op1"), cap.name("op2")) {
+        if let (Some(op1), Some(op2)) = (cap.name("op1"), cap.name("op2")) {
+            if enabled {
                 sum += op1.as_str().parse::<u32>().unwrap() * op2.as_str().parse::<u32>().unwrap();
             }
-        }
-        if let Some(_) = cap.name("do") {
+        } else if let Some(_) = cap.name("do") {
             enabled = true;
         } else if let Some(_) = cap.name("do_not") {
             enabled = false;
