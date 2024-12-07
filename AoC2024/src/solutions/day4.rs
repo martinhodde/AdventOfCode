@@ -75,7 +75,7 @@ impl Searchable for XmasSearch {
                 match (TryInto::<usize>::try_into(i_next), TryInto::<usize>::try_into(j_next)) {
                     (Ok(i_val), Ok(j_val)) => {
                         // Check if the new index extends beyond the grid and if the
-                        // new character is not the next in the sequence.
+                        // new character is not the next in the sequence
                         if i_val >= grid.len() || j_val >= grid[0].len() || grid[i_val][j_val] != self.seq[&grid[i][j]] {
                             break;
                         }
@@ -122,7 +122,7 @@ impl Searchable for XMASSearch {
                             grid[i_val][j_val] != grid[i + 1][j - 1]
                         },
                         // The TOP_LEFT and TOP_RIGHT match arms already compare against the
-                        // BOTTOM_LEFT and BOTTOM_RIGHT characters, so we default to true here.
+                        // BOTTOM_LEFT and BOTTOM_RIGHT characters, so we default to true here
                         _ => true,
                     }
                 },
