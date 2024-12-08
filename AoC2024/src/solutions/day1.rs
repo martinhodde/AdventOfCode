@@ -1,16 +1,20 @@
+use super::utils::lines_from_file;
 use counter::Counter;
 use std::collections::BinaryHeap;
-use super::utils::lines_from_file;
+
+static FILEPATH: &str = "inputs/day1.txt";
 
 fn get_sorted_lists() -> (Vec<u32>, Vec<u32>) {
-    let filepath = "inputs/day1.txt";
-    let lines = lines_from_file(filepath).expect(&format!("Input file {filepath} should exist"));
+    let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));
 
     // Aggregate both input columns in binary heaps to maintain sorted order
     let mut heap1: BinaryHeap<u32> = BinaryHeap::new();
     let mut heap2: BinaryHeap<u32> = BinaryHeap::new();
     for line in lines {
-        let vals: Vec<u32> = line.split_whitespace().map(|s| s.parse().unwrap()).collect();
+        let vals: Vec<u32> = line
+            .split_whitespace()
+            .map(|s| s.parse().unwrap())
+            .collect();
         heap1.push(vals[0]);
         heap2.push(vals[1]);
     }
@@ -22,7 +26,11 @@ fn get_sorted_lists() -> (Vec<u32>, Vec<u32>) {
 pub fn solve_part_1() {
     // Compute the element-wise absolute difference between the two lists, then sum over the result
     let (list1, list2) = get_sorted_lists();
-    let sum: u32 = list1.iter().zip(list2.iter()).map(|(&v1, &v2)| v1.abs_diff(v2)).sum();
+    let sum: u32 = list1
+        .iter()
+        .zip(list2.iter())
+        .map(|(&v1, &v2)| v1.abs_diff(v2))
+        .sum();
     println!("Total distance between lists: {sum}")
 }
 

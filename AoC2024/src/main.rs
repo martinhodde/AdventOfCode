@@ -16,7 +16,7 @@ struct AoCProblem {
 fn main() {
     let args = AoCProblem::parse();
     println!("Solving day: {:?}, part: {:?}", args.day, args.part);
-    
+
     // Call the solver for requested day and part
     get_solver_fns((args.day, args.part)).expect("Solver function should be implemented")()
 }

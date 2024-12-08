@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
 use super::utils::lines_from_file;
+use std::collections::{HashMap, HashSet};
 
 static FILEPATH: &str = "inputs/day5.txt";
 
@@ -29,13 +29,15 @@ fn is_update_valid(update: &Vec<u32>, order_rules: &HashMap<u32, HashSet<u32>>) 
     for (i, page) in update.iter().enumerate() {
         // For each page in the update, check for an ordering rule violation in any
         // of the preceding pages, and return false if one is found
-        if update.iter().take(i).any(|p|
-            order_rules.contains_key(page) && order_rules[page].contains(p)
-        ) {
+        if update
+            .iter()
+            .take(i)
+            .any(|p| order_rules.contains_key(page) && order_rules[page].contains(p))
+        {
             return false;
         }
     }
-    true  // No ordering rule violations are detected
+    true // No ordering rule violations are detected
 }
 
 /// Take the sum of all values at the middle index of each provided update.
@@ -44,7 +46,8 @@ fn middle_page_sum(updates: &Vec<Vec<u32>>) -> u32 {
 }
 
 fn get_ordering_rules() -> HashMap<u32, HashSet<u32>> {
-    let rule_tuples: Vec<(u32, u32)> = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"))
+    let rule_tuples: Vec<(u32, u32)> = lines_from_file(FILEPATH)
+        .expect(&format!("Input file {FILEPATH} should exist"))
         .into_iter()
         .take_while(|s| s != "")
         .map(|rule| {
@@ -63,13 +66,14 @@ fn get_ordering_rules() -> HashMap<u32, HashSet<u32>> {
 }
 
 fn get_updates() -> Vec<Vec<u32>> {
-    lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"))
+    lines_from_file(FILEPATH)
+        .expect(&format!("Input file {FILEPATH} should exist"))
         .into_iter()
         .skip_while(|s| s != "")
         .skip(1)
-        .map(|update| update.split(',')
-            .map(|p| p.parse().unwrap())
-            .collect()  // Create sub-vec for individual update
+        .map(
+            // Create sub-vec for individual update
+            |update| update.split(',').map(|p| p.parse().unwrap()).collect(),
         )
         .collect()
 }

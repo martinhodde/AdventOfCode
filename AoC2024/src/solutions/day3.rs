@@ -1,5 +1,7 @@
-use regex::Regex;
 use super::utils::lines_from_file;
+use regex::Regex;
+
+static FILEPATH: &str = "inputs/day3.txt";
 
 /// Find all expressions in the input that match the multiplication pattern,
 /// then sum the result of these multiplication programs.
@@ -11,9 +13,10 @@ fn mul_sum() -> u32 {
     let re = Regex::new(pattern).unwrap();
 
     re.captures_iter(lines)
-        .map(|cap|
+        .map(|cap| {
             cap.get(1).unwrap().as_str().parse::<u32>().unwrap()
-            * cap.get(2).unwrap().as_str().parse::<u32>().unwrap())
+                * cap.get(2).unwrap().as_str().parse::<u32>().unwrap()
+        })
         .sum()
 }
 
@@ -28,7 +31,7 @@ fn mul_sum_enabled() -> u32 {
     let re = Regex::new(pattern).unwrap();
 
     let mut sum = 0;
-    let mut enabled = true;  // Multiplication is initially enabled
+    let mut enabled = true; // Multiplication is initially enabled
     for cap in re.captures_iter(lines) {
         if let (Some(op1), Some(op2)) = (cap.name("op1"), cap.name("op2")) {
             if enabled {
@@ -45,8 +48,9 @@ fn mul_sum_enabled() -> u32 {
 }
 
 fn get_input() -> String {
-    let filepath = "inputs/day3.txt";
-    lines_from_file(filepath).expect(&format!("Input file {filepath} should exist")).join("")
+    lines_from_file(FILEPATH)
+        .expect(&format!("Input file {FILEPATH} should exist"))
+        .join("")
 }
 
 pub fn solve_part_1() {
