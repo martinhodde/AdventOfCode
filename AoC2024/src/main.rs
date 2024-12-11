@@ -1,7 +1,7 @@
 mod solutions;
 
 use clap::Parser;
-use solutions::utils::get_solver_fns;
+use solutions::utils::get_solver_fn;
 
 /// The AoC problem defined by the day and part
 #[derive(Parser)]
@@ -18,5 +18,5 @@ fn main() {
     println!("Solving day: {:?}, part: {:?}", args.day, args.part);
 
     // Call the solver for requested day and part
-    get_solver_fns((args.day, args.part)).expect("Solver function should be implemented")()
+    get_solver_fn((args.day, args.part)).expect("Solver function should be implemented")()
 }
