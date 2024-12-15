@@ -4,67 +4,62 @@ use std::collections::{HashMap, HashSet};
 static FILEPATH: &str = "inputs/day6.txt";
 
 /// Compute the set of distinct coordinates at which a single obstruction can be added
-/// to induce a loop in the path of the guard.
+/// to induce a loop in the path of the guard, given the starting position and direction.
 fn obstruction_positions(
-    path: &HashMap<(usize, usize), HashSet<(isize, isize)>>,
+    start_pos: (usize, usize),
+    start_step: (isize, isize),
     grid: &Vec<Vec<char>>,
 ) -> HashSet<(usize, usize)> {
-    path.iter()
-        .map(|(&pos, &ref orientations)| {
-            orientations.iter().filter_map(move |&step| {
-                // Simulate obstacle in front of guard, then trace path from position
-                let new_grid = sim_obstacle_in_front(pos, step, grid);
-                let new_path = walk_path(pos, step, &new_grid);
-                if has_loop(&new_path, &new_grid) {
-                    // If any traced paths are loops, map to obstacle location
-                    Some(try_step(pos, step, &new_grid).unwrap())
-                } else {
-                    None
-                }
-            })
-        })
-        .flatten() // Flatten positions from which multiple obstacles may appear
-        .collect()
+    let mut obstructions = HashSet::new();
+    let mut visited = HashMap::from([(start_pos, HashSet::from([start_step]))]);
+    let mut pos = start_pos;
+    let mut step = start_step;
+
+    while let Ok((i_next, j_next)) = try_step(pos, step, grid) {
+        // Simulate obstacle in front of guard, then trace path in search of a loop
+        let new_grid = sim_obstacle_in_front(pos, step, &visited, grid);
+        let new_path = walk_path(pos, step, &new_grid);
+        if has_loop(&new_path, &new_grid) {
+            obstructions.insert(try_step(pos, step, &new_grid).unwrap());
+        }
+
+        // Continue traversing the original path
+        if grid[i_next][j_next] == '#' {
+            step = (step.1, -step.0); // Take a 90-degree clockwise turn at obstacle
+        } else {
+            pos = (i_next, j_next); // Continue traveling in the same direction otherwise
+        }
+        visited.entry(pos).or_insert_with(HashSet::new).insert(step);
+    }
+
+    obstructions
 }
 
 /// Return a copy of the provided grid, but with an obstacle inserted in front of the given position
-/// according to the step direction. If an obstacle already exists at the location immediately to the
-/// right, the obstacle would land directly in front of the guard's initial position, or the step
-/// would result in walking out of bounds, return a copy of the original grid unmodified.
+/// according to the step direction. If the proposed obstacle location is at the original starting point,
+/// within the path taken to reach the current location, or out of bounds, do not insert an obstacle.
 fn sim_obstacle_in_front(
     pos: (usize, usize),
     step: (isize, isize),
+    visited: &HashMap<(usize, usize), HashSet<(isize, isize)>>,
     grid: &Vec<Vec<char>>,
 ) -> Vec<Vec<char>> {
     let mut new_grid = grid.clone();
     if let Ok((i_front, j_front)) = try_step(pos, step, grid) {
-        if let Ok((i_right, j_right)) = try_step(pos, (step.1, -step.0), grid) {
-            let exists_on_right = grid[i_right][j_right] == '#';
-            let would_be_on_start = grid[i_front][j_front] == '^';
-            let would_block_start = if let Ok((i_below_front, j_below_front)) =
-                try_step((i_front, j_front), (1, 0), grid)
-            {
-                grid[i_below_front][j_below_front] == '^'
-            } else {
-                false
-            };
-
-            // If none of the disqualifying conditions are met, place obstacle in front of position
-            if !exists_on_right && !would_be_on_start && !would_block_start {
-                new_grid[i_front][j_front] = '#';
-            }
+        if !visited.contains_key(&(i_front, j_front)) && grid[i_front][j_front] == '^' {
+            new_grid[i_front][j_front] = '#';
         }
     }
     new_grid
 }
 
 /// Return whether the provided set of visited positions forms a loop, as indicated
-/// by the presence of the designated "loop key" of (grid.len(), grid.len())
+/// by the presence of the designated "loop key" of (grid.len(), grid[0].len())
 fn has_loop(
     path: &HashMap<(usize, usize), HashSet<(isize, isize)>>,
     grid: &Vec<Vec<char>>,
 ) -> bool {
-    path.contains_key(&(grid.len(), grid.len()))
+    path.contains_key(&(grid.len(), grid[0].len()))
 }
 
 /// Return the set of all grid coordinates visited by the guard, starting at the given position
@@ -72,7 +67,7 @@ fn has_loop(
 /// This assumes that the guard takes a right turn each time she encounters an obstacle.
 ///
 /// For bookkeeping purposes, if a loop is encountered, the returned set will have a designated
-/// "loop key" of (grid.len(), grid.len()) mapped to an empty set.
+/// "loop key" of (grid.len(), grid[0].len()) mapped to an empty set.
 fn walk_path(
     start_pos: (usize, usize),
     start_step: (isize, isize),
@@ -84,15 +79,14 @@ fn walk_path(
 
     while let Ok((i_next, j_next)) = try_step(pos, step, grid) {
         if grid[i_next][j_next] == '#' {
-            // Take a 90-degree clockwise turn when an obstacle is encountered
-            step = (step.1, -step.0);
+            step = (step.1, -step.0); // Take a 90-degree clockwise turn at obstacle
         } else {
-            pos = (i_next, j_next); // Continue traveling in the same direction
+            pos = (i_next, j_next); // Continue traveling in the same direction otherwise
 
             if visited.contains_key(&pos) && visited[&pos].contains(&step) {
                 // Position already visited in the same orientation, loop detected...
                 // Insert special loop key and exit
-                visited.insert((grid.len(), grid.len()), HashSet::default());
+                visited.insert((grid.len(), grid[0].len()), HashSet::default());
                 break;
             }
         }
@@ -131,12 +125,6 @@ fn try_step(
     }
 }
 
-/// Return a map of positions visited to the guard's orientation(s) while visiting them,
-/// beginning from the starting point found by scanning the input grid.
-fn get_path_from_start(grid: &Vec<Vec<char>>) -> HashMap<(usize, usize), HashSet<(isize, isize)>> {
-    walk_path(find_start_pt(grid).unwrap(), (-1, 0), grid)
-}
-
 /// Return the grid coordinates of the starting position, at which point
 /// the guard is facing up. Error if no starting point is found.
 fn find_start_pt(grid: &Vec<Vec<char>>) -> Result<(usize, usize), &str> {
@@ -169,7 +157,9 @@ fn show_grid(
             if obstacles.contains(&(i, j)) {
                 new_grid[i][j] = 'O';
             } else if visited.contains_key(&(i, j)) {
-                new_grid[i][j] = 'X';
+                if grid[i][j] != '^' {
+                    new_grid[i][j] = 'X';
+                }
             }
         }
     }
@@ -182,7 +172,9 @@ fn show_grid(
 
 pub fn solve_part_1() {
     let grid = get_grid();
-    let path = get_path_from_start(&grid);
+    let start_pos = find_start_pt(&grid).unwrap();
+    let start_step = (-1, 0); // Guard starts facing up
+    let path = walk_path(start_pos, start_step, &grid);
     show_grid(&grid, &path, &HashSet::default());
 
     let num_visited = path.len();
@@ -191,11 +183,10 @@ pub fn solve_part_1() {
 
 pub fn solve_part_2() {
     let grid = get_grid();
-    let path = get_path_from_start(&grid);
-    // let (i, j) = find_start_pt(&grid).unwrap();
-    // path.remove(&(i, j));
-    // path.remove(&(i + 1, j));
-    let obstacles = obstruction_positions(&path, &grid);
+    let start_pos = find_start_pt(&grid).unwrap();
+    let start_step = (-1, 0); // Guard starts facing up
+    let path = walk_path(start_pos, start_step, &grid);
+    let obstacles = obstruction_positions(start_pos, start_step, &grid);
     show_grid(&grid, &path, &obstacles);
 
     let num_obstructions = obstacles.len();
