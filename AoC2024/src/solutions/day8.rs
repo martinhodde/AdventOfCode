@@ -117,8 +117,7 @@ fn try_step(
             if i < grid.len() && j < grid[0].len() {
                 Some((i, j))
             } else {
-                // At least one index is too high, out of bounds
-                None
+                None // At least one index is too high, out of bounds
             }
         }
         _ => None, // At least one index is negative, out of bounds
