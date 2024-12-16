@@ -46,7 +46,7 @@ fn sim_obstacle_in_front(
 ) -> Vec<Vec<char>> {
     let mut new_grid = grid.clone();
     if let Ok((i_front, j_front)) = try_step(pos, step, grid) {
-        if !visited.contains_key(&(i_front, j_front)) && grid[i_front][j_front] == '^' {
+        if !visited.contains_key(&(i_front, j_front)) && grid[i_front][j_front] != '^' {
             new_grid[i_front][j_front] = '#';
         }
     }
