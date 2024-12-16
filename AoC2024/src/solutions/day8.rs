@@ -5,10 +5,11 @@ use std::collections::{HashMap, HashSet};
 static FILEPATH: &str = "inputs/day8.txt";
 
 /// Given a map of frequencies to their antenna locations, return the distinct locations
-/// of all antinodes across all frequencies.
+/// of all antinodes across all frequencies according to the provided antinode location function.
 fn antinode_locations(
     antenna_locs: &HashMap<char, HashSet<(usize, usize)>>,
     grid: &Vec<Vec<char>>,
+    antinode_fn: fn((usize, usize), (usize, usize), &Vec<Vec<char>>) -> HashSet<(usize, usize)>,
 ) -> HashSet<(usize, usize)> {
     antenna_locs
         .iter()
@@ -21,28 +22,14 @@ fn antinode_locations(
                 .map(|loc_pair| (loc_pair[0].clone(), loc_pair[1].clone()))
                 .collect();
 
-            // For each pair of antenna locations of the same frequency, trace the vector between
-            // them and add it beyond each endpoint to determine potential antinode locations,
-            // filtering out those that are out of bounds
+            // For each pair of antenna locations of the same frequency, determine the
+            // possible antinode locations
             loc_pairs
                 .into_iter()
-                .map(|((i_0, j_0), (i_1, j_1))| {
-                    [
-                        (
-                            (i_0, j_0),                                                 // Endpoint 0
-                            (i_0 as isize - i_1 as isize, j_0 as isize - j_1 as isize), // Step direction 0
-                        ),
-                        (
-                            (i_1, j_1),                                                 // Endpoint 1
-                            (i_1 as isize - i_0 as isize, j_1 as isize - j_0 as isize), // Step direction 1
-                        ),
-                    ]
-                    .into_iter()
-                    .filter_map(|(loc, step)| try_step(loc, step, grid))
-                })
-                .flatten() // Flatten antinode locations across all pairwise combos for the current frequency
+                .map(|(loc1, loc2)| antinode_fn(loc1, loc2, grid))
+                .flatten() // Flatten antinodes across all pairwise combos for the current frequency
         })
-        .flatten() // Flatten antinode locations across all frequencies
+        .flatten() // Flatten antinodes across all frequencies
         .collect()
 }
 
@@ -60,6 +47,59 @@ fn antenna_locations(grid: &Vec<Vec<char>>) -> HashMap<char, HashSet<(usize, usi
         }
     }
     locations
+}
+
+/// Given two antenna locations of the same frequency, compute the (up to) two possible antinode
+/// locations, subject to the bounds of the provided grid.
+fn get_antinode_pts(
+    loc1: (usize, usize),
+    loc2: (usize, usize),
+    grid: &Vec<Vec<char>>,
+) -> HashSet<(usize, usize)> {
+    let (i_1, j_1) = (loc1.0 as isize, loc1.1 as isize);
+    let (i_2, j_2) = (loc2.0 as isize, loc2.1 as isize);
+
+    // For each of the two endpoints, trace a vector from the other point to itself, then add
+    // this vector to the current point to determine potential antinode locations, filtering
+    // out those that are out of bounds
+    [
+        (loc1, (i_1 - i_2, j_1 - j_2)),
+        (loc2, (i_2 - i_1, j_2 - j_1)),
+    ]
+    .into_iter()
+    .filter_map(|(loc, step)| try_step(loc, step, grid))
+    .collect()
+}
+
+/// Given two antenna locations of the same frequency, compute all possible antinode
+/// locations, subject to the bounds of the provided grid and taking into account the
+/// effects of resonant harmonics.
+fn get_antinode_pts_with_resonance(
+    loc1: (usize, usize),
+    loc2: (usize, usize),
+    grid: &Vec<Vec<char>>,
+) -> HashSet<(usize, usize)> {
+    let (i_1, j_1) = (loc1.0 as isize, loc1.1 as isize);
+    let (i_2, j_2) = (loc2.0 as isize, loc2.1 as isize);
+
+    // For each of the two endpoints, trace a vector from the other point to itself, then add
+    // this vector to the current point repeatedly to determine potential antinode locations,
+    // terminating when the vector addition results in stepping out of bounds
+    let mut antinode_locs: HashSet<(usize, usize)> = HashSet::from([loc1, loc2]);
+    let loc_dirs = [
+        (loc1, (i_1 - i_2, j_1 - j_2)),
+        (loc2, (i_2 - i_1, j_2 - j_1)),
+    ];
+
+    for (start_loc, step) in loc_dirs {
+        let mut loc = start_loc;
+        while let Some(new_loc) = try_step(loc, step, grid) {
+            antinode_locs.insert(new_loc);
+            loc = new_loc;
+        }
+    }
+
+    antinode_locs
 }
 
 /// Return the coordinates of the hypothetical result of taking the given step from
@@ -96,12 +136,15 @@ fn get_grid() -> Vec<Vec<char>> {
 pub fn solve_part_1() {
     let grid = get_grid();
     let antenna_locs = antenna_locations(&grid);
-    let antinode_locs = antinode_locations(&antenna_locs, &grid);
-    println!("{:?}", antenna_locs);
+    let antinode_locs = antinode_locations(&antenna_locs, &grid, get_antinode_pts);
     let num_antinode_locs = antinode_locs.len();
     println!("Number of unique locations that contain an antinode: {num_antinode_locs}")
 }
 
 pub fn solve_part_2() {
-    println!("")
+    let grid = get_grid();
+    let antenna_locs = antenna_locations(&grid);
+    let antinode_locs = antinode_locations(&antenna_locs, &grid, get_antinode_pts_with_resonance);
+    let num_antinode_locs = antinode_locs.len();
+    println!("Number of unique locations that contain an antinode, considering resonant harmonics: {num_antinode_locs}")
 }
