@@ -1,7 +1,7 @@
 use super::utils::lines_from_file;
 use std::collections::HashMap;
 
-static FILEPATH: &str = "inputs/day4.txt";
+const FILEPATH: &str = "inputs/day4.txt";
 
 trait Searchable {
     fn num_matches_from_pt(&self, coords: (usize, usize), grid: &Vec<Vec<char>>) -> u32;

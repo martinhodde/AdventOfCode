@@ -1,6 +1,6 @@
 use super::utils::lines_from_file;
 
-static FILEPATH: &str = "inputs/day7.txt";
+const FILEPATH: &str = "inputs/day7.txt";
 
 /// Compute the sum of all calibration test values whose operands can be combined
 /// satisfy the provided equation validation function.

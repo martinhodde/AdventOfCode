@@ -1,6 +1,6 @@
 use super::utils::lines_from_file;
 
-static FILEPATH: &str = "inputs/day2.txt";
+const FILEPATH: &str = "inputs/day2.txt";
 
 fn num_safe_records(tolerate_bad_level: bool) -> u32 {
     let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));

@@ -2,7 +2,7 @@ use super::utils::lines_from_file;
 use counter::Counter;
 use std::collections::BinaryHeap;
 
-static FILEPATH: &str = "inputs/day1.txt";
+const FILEPATH: &str = "inputs/day1.txt";
 
 fn get_sorted_lists() -> (Vec<u32>, Vec<u32>) {
     let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));

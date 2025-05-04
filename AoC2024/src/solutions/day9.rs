@@ -1,6 +1,6 @@
 use super::utils::lines_from_file;
 
-static FILEPATH: &str = "inputs/day9.txt";
+const FILEPATH: &str = "inputs/day9.txt";
 
 /// Compute the checksum of the sequence of file ID numbers.
 fn checksum(filesystem: &Vec<i32>) -> u64 {

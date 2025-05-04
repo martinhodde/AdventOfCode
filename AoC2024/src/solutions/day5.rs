@@ -1,7 +1,7 @@
 use super::utils::lines_from_file;
 use std::collections::{HashMap, HashSet};
 
-static FILEPATH: &str = "inputs/day5.txt";
+const FILEPATH: &str = "inputs/day5.txt";
 
 /// Reorder the provided update according to the given ordering rules.
 fn reorder_update(update: &Vec<u32>, order_rules: &HashMap<u32, HashSet<u32>>) -> Vec<u32> {
