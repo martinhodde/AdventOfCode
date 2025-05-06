@@ -5,9 +5,7 @@ const FILEPATH: &str = "inputs/day3.txt";
 
 /// Find all expressions in the input that match the multiplication pattern,
 /// then sum the result of these multiplication programs.
-fn mul_sum() -> u32 {
-    let lines = &get_input();
-
+fn mul_sum(lines: &String) -> u32 {
     // Capture X and Y in each mul(X,Y) expression, where X and Y are 1-3 digit numbers
     let pattern = r"mul\((\d{1,3}),(\d{1,3})\)";
     let re = Regex::new(pattern).unwrap();
@@ -23,9 +21,7 @@ fn mul_sum() -> u32 {
 /// Find all expressions in the input that match the multiplication pattern AND
 /// are enabled according to the preceeding do() and don't() instructions, then
 /// sum the result of these multiplication programs.
-fn mul_sum_enabled() -> u32 {
-    let lines = &get_input();
-
+fn mul_sum_enabled(lines: &String) -> u32 {
     // Include named capture groups for do() and don't() commands
     let pattern = r"(mul\((?<op1>[0-9]+),(?<op2>[0-9]+)\))|(?<do>do\(\))|(?<do_not>don't\(\))";
     let re = Regex::new(pattern).unwrap();
@@ -54,11 +50,13 @@ fn get_input() -> String {
 }
 
 pub fn solve_part_1() {
-    let sum = mul_sum();
+    let lines = get_input();
+    let sum = mul_sum(&lines);
     println!("Sum of multiplication results: {sum}")
 }
 
 pub fn solve_part_2() {
-    let sum = mul_sum_enabled();
+    let lines = get_input();
+    let sum = mul_sum_enabled(&lines);
     println!("Sum of only enabled multiplication results: {sum}")
 }
