@@ -1,18 +1,13 @@
 use super::utils::lines_from_file;
+use super::utils::try_step;
 use std::collections::HashMap;
 
 const FILEPATH: &str = "inputs/day4.txt";
 
-trait Searchable {
-    fn num_matches_from_pt(&self, coords: (usize, usize), grid: &Vec<Vec<char>>) -> u32;
-}
-
 /// Part 1
 struct XmasSearch {
-    start: char, // The first letter of the searched word
-
-    end: char, // The final letter of the searched word
-
+    start: char,              // The first letter of the searched word
+    end: char,                // The final letter of the searched word
     seq: HashMap<char, char>, // Sequence for crossword search
 }
 
@@ -32,8 +27,7 @@ impl XmasSearch {
 
 /// Part 2
 struct XMASSearch {
-    center: char, // The middle character of an X
-
+    center: char,     // The middle character of an X
     wings: Vec<char>, // The two characters that comprise the wings of an X
 }
 
@@ -52,7 +46,11 @@ impl XMASSearch {
     ];
 }
 
-impl Searchable for XmasSearch {
+trait Search {
+    fn num_matches_from_pt(&self, coords: (usize, usize), grid: &Vec<Vec<char>>) -> u32;
+}
+
+impl Search for XmasSearch {
     /// If a start character is detected at the provided coordinates in the grid, draw a line outward
     /// in every possible direction and check for the correct sequence of characters.
     fn num_matches_from_pt(&self, coords: (usize, usize), grid: &Vec<Vec<char>>) -> u32 {
@@ -61,36 +59,22 @@ impl Searchable for XmasSearch {
         }
 
         let mut num_matches: u32 = 0;
-        for (i_dir, j_dir) in XmasSearch::DIRECTIONS.iter() {
+        for dir in XmasSearch::DIRECTIONS.into_iter() {
             let (mut i, mut j) = coords;
             loop {
                 if grid[i][j] == self.end {
                     // We have found the desired word if the final character is reached
                     num_matches += 1;
                     break;
-                }
-
-                // Take a step in the current direction
-                let (i_next, j_next) = (i as isize + i_dir, j as isize + j_dir);
-
-                // Break out of the loop if next char is out of bounds or the wrong letter
-                match (
-                    TryInto::<usize>::try_into(i_next),
-                    TryInto::<usize>::try_into(j_next),
-                ) {
-                    (Ok(i_val), Ok(j_val)) => {
-                        // Check if the new index extends beyond the grid and if the
-                        // new character is not the next in the sequence
-                        if i_val >= grid.len()
-                            || j_val >= grid[0].len()
-                            || grid[i_val][j_val] != self.seq[&grid[i][j]]
-                        {
-                            break;
-                        }
-
-                        (i, j) = (i_val, j_val);
+                } else if let Some((i_next, j_next)) = try_step((i, j), dir, grid) {
+                    if grid[i_next][j_next] == self.seq[&grid[i][j]] {
+                        // Update position if the character is the next in the sequence
+                        (i, j) = (i_next, j_next);
+                    } else {
+                        break;
                     }
-                    _ => break, // At least one index is negative, therefore out of bounds
+                } else {
+                    break; // Step would be out of bounds
                 }
             }
         }
@@ -99,7 +83,7 @@ impl Searchable for XmasSearch {
     }
 }
 
-impl Searchable for XMASSearch {
+impl Search for XMASSearch {
     /// If a center character is detected at the provided coordinates in the grid, draw an X outward
     /// and check for the correct distribution of wing characters.
     fn num_matches_from_pt(&self, coords: (usize, usize), grid: &Vec<Vec<char>>) -> u32 {
@@ -108,33 +92,19 @@ impl Searchable for XMASSearch {
             return 0;
         }
 
-        XMASSearch::DIRECTIONS.iter().all(|(i_dir, j_dir)| {
-            // Take a step in the current direction
-            let (i_next, j_next) = (i as isize + i_dir, j as isize + j_dir);
-
-            // Return false and short-circuit if any char in the X is out of bounds or the wrong letter
-            match (
-                TryInto::<usize>::try_into(i_next),
-                TryInto::<usize>::try_into(j_next),
-            ) {
-                (Ok(i_val), Ok(j_val)) => {
-                    // Check if the new index is within the bounds of the grid and if the character
-                    // in the current X wing is valid
-                    if i_val >= grid.len()
-                        || j_val >= grid[0].len()
-                        || !self.wings.contains(&grid[i_val][j_val])
-                    {
-                        return false;
-                    }
-
+        XMASSearch::DIRECTIONS.into_iter().all(|dir| {
+            if let Some((i_next, j_next)) = try_step(coords, dir, grid) {
+                if !self.wings.contains(&grid[i_next][j_next]) {
+                    return false;
+                } else {
                     // Ensure the opposite wing character is not equal to that of the current wing
-                    match (*i_dir, *j_dir) {
+                    match dir {
                         XMASSearch::TOP_LEFT => {
                             if i + 1 >= grid.len() || j + 1 >= grid[0].len() {
                                 false
                             } else {
                                 // TOP_LEFT should not be equal to BOTTOM_RIGHT
-                                grid[i_val][j_val] != grid[i + 1][j + 1]
+                                grid[i_next][j_next] != grid[i + 1][j + 1]
                             }
                         }
                         XMASSearch::TOP_RIGHT => {
@@ -142,7 +112,7 @@ impl Searchable for XMASSearch {
                                 false
                             } else {
                                 // TOP_RIGHT should not be equal to BOTTOM_LEFT
-                                grid[i_val][j_val] != grid[i + 1][j - 1]
+                                grid[i_next][j_next] != grid[i + 1][j - 1]
                             }
                         }
                         // The TOP_LEFT and TOP_RIGHT match arms already compare against the
@@ -150,14 +120,15 @@ impl Searchable for XMASSearch {
                         _ => true,
                     }
                 }
-                _ => false, // At least one index is negative, therefore out of bounds
+            } else {
+                return false; // Step would be out of bounds
             }
         }) as u32
     }
 }
 
 fn num_matches_in_grid(match_fn: impl Fn((usize, usize), &Vec<Vec<char>>) -> u32) -> u32 {
-    let grid = &get_grid();
+    let grid = get_grid();
 
     // Take the cross product of the grid index ranges
     let grid_range: Vec<(usize, usize)> = (0..grid.len())
@@ -167,7 +138,7 @@ fn num_matches_in_grid(match_fn: impl Fn((usize, usize), &Vec<Vec<char>>) -> u32
     // Sum matches over all grid indices
     grid_range
         .into_iter()
-        .map(|coords| match_fn(coords, grid))
+        .map(|coords| match_fn(coords, &grid))
         .sum()
 }
 
@@ -175,7 +146,7 @@ fn get_grid() -> Vec<Vec<char>> {
     lines_from_file(FILEPATH)
         .expect(&format!("Input file {FILEPATH} should exist"))
         .into_iter()
-        .map(|line: String| line.chars().collect())
+        .map(|line| line.chars().collect())
         .collect()
 }
 
