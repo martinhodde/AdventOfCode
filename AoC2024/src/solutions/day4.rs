@@ -1,5 +1,4 @@
-use super::utils::lines_from_file;
-use super::utils::try_step;
+use super::utils::{lines_from_file, try_step};
 use std::collections::HashMap;
 
 const FILEPATH: &str = "inputs/day4.txt";
