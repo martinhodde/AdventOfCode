@@ -4,9 +4,7 @@ use std::collections::BinaryHeap;
 
 const FILEPATH: &str = "inputs/day1.txt";
 
-fn get_sorted_lists() -> (Vec<u32>, Vec<u32>) {
-    let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));
-
+fn get_sorted_lists(lines: &Vec<String>) -> (Vec<u32>, Vec<u32>) {
     // Aggregate both input columns in binary heaps to maintain sorted order
     let mut heap1: BinaryHeap<u32> = BinaryHeap::new();
     let mut heap2: BinaryHeap<u32> = BinaryHeap::new();
@@ -24,19 +22,23 @@ fn get_sorted_lists() -> (Vec<u32>, Vec<u32>) {
 }
 
 pub fn solve_part_1() {
+    let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));
     // Compute the element-wise absolute difference between the two lists, then sum over the result
-    let (list1, list2) = get_sorted_lists();
+    let (list1, list2) = get_sorted_lists(&lines);
     let sum: u32 = list1
         .iter()
         .zip(list2.iter())
         .map(|(&v1, &v2)| v1.abs_diff(v2))
         .sum();
+
     println!("Total distance between lists: {sum}")
 }
 
 pub fn solve_part_2() {
-    let (list1, list2) = get_sorted_lists();
+    let lines = lines_from_file(FILEPATH).expect(&format!("Input file {FILEPATH} should exist"));
+    let (list1, list2) = get_sorted_lists(&lines);
     let list2_ctr = list2.iter().collect::<Counter<_, u32>>();
     let sum: u32 = list1.iter().map(|n| n * list2_ctr[n]).sum();
+
     println!("Similarity score between lists: {sum}")
 }
