@@ -5,10 +5,6 @@ use std::{
     path::Path,
 };
 
-pub fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
-    BufReader::new(File::open(filename)?).lines().collect()
-}
-
 pub fn get_solver_fn(day: u32, part: u32) -> Result<fn(), &'static str> {
     match (day, part) {
         (1, 1) => Ok(solutions::day1::solve_part_1),
@@ -29,6 +25,32 @@ pub fn get_solver_fn(day: u32, part: u32) -> Result<fn(), &'static str> {
         (8, 2) => Ok(solutions::day8::solve_part_2),
         (9, 1) => Ok(solutions::day9::solve_part_1),
         (9, 2) => Ok(solutions::day9::solve_part_2),
-        _ => Err("Solver not yet implemented!"),
+        _ => todo!("no solver for day {day} part {part}"),
+    }
+}
+
+pub fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
+    BufReader::new(File::open(filename)?).lines().collect()
+}
+
+/// Return the coordinates of the hypothetical result of taking the given step from
+/// the provided starting point. Return None if the step would be out of bounds.
+pub fn try_step(
+    start: (usize, usize),
+    step: (isize, isize),
+    grid: &Vec<Vec<char>>,
+) -> Option<(usize, usize)> {
+    match (
+        TryInto::<usize>::try_into(start.0 as isize + step.0),
+        TryInto::<usize>::try_into(start.1 as isize + step.1),
+    ) {
+        (Ok(i), Ok(j)) => {
+            if i < grid.len() && j < grid[0].len() {
+                Some((i, j))
+            } else {
+                None // At least one index is too high, out of bounds
+            }
+        }
+        _ => None, // At least one index is negative, out of bounds
     }
 }
