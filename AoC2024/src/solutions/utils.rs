@@ -25,6 +25,7 @@ pub fn get_solver_fn(day: u32, part: u32) -> Result<fn(), &'static str> {
         (8, 2) => Ok(solutions::day08::solve_part_2),
         (9, 1) => Ok(solutions::day09::solve_part_1),
         (9, 2) => Ok(solutions::day09::solve_part_2),
+        (10, 1) => Ok(solutions::day10::solve_part_1),
         _ => todo!("no solver for day {day} part {part}"),
     }
 }
@@ -35,10 +36,10 @@ pub fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
 
 /// Return the coordinates of the hypothetical result of taking the given step from
 /// the provided starting point. Return None if the step would be out of bounds.
-pub fn try_step(
+pub fn try_step<T>(
     start: (usize, usize),
     step: (isize, isize),
-    grid: &Vec<Vec<char>>,
+    grid: &Vec<Vec<T>>,
 ) -> Option<(usize, usize)> {
     match (
         TryInto::<usize>::try_into(start.0 as isize + step.0),
