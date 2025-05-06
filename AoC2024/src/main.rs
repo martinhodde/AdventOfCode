@@ -18,5 +18,5 @@ fn main() {
     println!("Solving day: {:?}, part: {:?}", args.day, args.part);
 
     // Call the solver for requested day and part
-    get_solver_fn((args.day, args.part)).expect("Solver function should be implemented")()
+    get_solver_fn(args.day, args.part).expect("Solver function should be implemented")()
 }
