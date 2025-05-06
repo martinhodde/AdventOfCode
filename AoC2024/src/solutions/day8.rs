@@ -1,4 +1,4 @@
-use super::utils::lines_from_file;
+use super::utils::{lines_from_file, try_step};
 use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
@@ -14,19 +14,11 @@ fn antinode_locations(
     antenna_locs
         .iter()
         .map(|(_, locs)| {
-            // Collect the pairwise combinations of antenna locations for the current frequency
-            let loc_pairs: Vec<((usize, usize), (usize, usize))> = locs
-                .iter()
-                .cloned()
+            // For each pairwise combination of antenna locations of the same frequency,
+            // determine the possible antinode locations
+            locs.iter()
                 .combinations(2)
-                .map(|loc_pair| (loc_pair[0].clone(), loc_pair[1].clone()))
-                .collect();
-
-            // For each pair of antenna locations of the same frequency, determine the
-            // possible antinode locations
-            loc_pairs
-                .into_iter()
-                .map(|(loc1, loc2)| antinode_fn(loc1, loc2, grid))
+                .map(|loc| antinode_fn(*loc[0], *loc[1], grid))
                 .flatten() // Flatten antinodes across all pairwise combos for the current frequency
         })
         .flatten() // Flatten antinodes across all frequencies
@@ -100,28 +92,6 @@ fn get_antinode_pts_with_resonance(
     }
 
     antinode_locs
-}
-
-/// Return the coordinates of the hypothetical result of taking the given step from
-/// the provided starting point. Return None if the step would be out of bounds.
-fn try_step(
-    start: (usize, usize),
-    step: (isize, isize),
-    grid: &Vec<Vec<char>>,
-) -> Option<(usize, usize)> {
-    match (
-        TryInto::<usize>::try_into(start.0 as isize + step.0),
-        TryInto::<usize>::try_into(start.1 as isize + step.1),
-    ) {
-        (Ok(i), Ok(j)) => {
-            if i < grid.len() && j < grid[0].len() {
-                Some((i, j))
-            } else {
-                None // At least one index is too high, out of bounds
-            }
-        }
-        _ => None, // At least one index is negative, out of bounds
-    }
 }
 
 fn get_grid() -> Vec<Vec<char>> {
