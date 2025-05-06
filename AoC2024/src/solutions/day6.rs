@@ -1,4 +1,4 @@
-use super::utils::lines_from_file;
+use super::utils::{lines_from_file, try_step};
 use std::collections::{HashMap, HashSet};
 
 const FILEPATH: &str = "inputs/day6.txt";
@@ -15,7 +15,7 @@ fn obstruction_positions(
     let mut pos = start_pos;
     let mut step = start_step;
 
-    while let Ok((i_next, j_next)) = try_step(pos, step, grid) {
+    while let Some((i_next, j_next)) = try_step(pos, step, grid) {
         // Simulate obstacle in front of guard, then trace path in search of a loop
         let new_grid = sim_obstacle_in_front(pos, step, &visited, grid);
         let new_path = walk_path(pos, step, &new_grid);
@@ -45,7 +45,7 @@ fn sim_obstacle_in_front(
     grid: &Vec<Vec<char>>,
 ) -> Vec<Vec<char>> {
     let mut new_grid = grid.clone();
-    if let Ok((i_front, j_front)) = try_step(pos, step, grid) {
+    if let Some((i_front, j_front)) = try_step(pos, step, grid) {
         if !visited.contains_key(&(i_front, j_front)) && grid[i_front][j_front] != '^' {
             new_grid[i_front][j_front] = '#';
         }
@@ -77,7 +77,7 @@ fn walk_path(
     let mut pos = start_pos;
     let mut step = start_step;
 
-    while let Ok((i_next, j_next)) = try_step(pos, step, grid) {
+    while let Some((i_next, j_next)) = try_step(pos, step, grid) {
         if grid[i_next][j_next] == '#' {
             step = (step.1, -step.0); // Take a 90-degree clockwise turn at obstacle
         } else {
@@ -96,33 +96,6 @@ fn walk_path(
     }
 
     visited
-}
-
-/// Return the coordinates of the hypothetical result of taking the given step from
-/// the provided starting point. Error if the step would be out of bounds.
-fn try_step(
-    start: (usize, usize),
-    step: (isize, isize),
-    grid: &Vec<Vec<char>>,
-) -> Result<(usize, usize), &str> {
-    let (i, j) = start;
-    let (i_s, j_s) = step;
-
-    // Probe in the provided direction
-    let (i_next, j_next) = (i as isize + i_s, j as isize + j_s);
-    match (
-        TryInto::<usize>::try_into(i_next),
-        TryInto::<usize>::try_into(j_next),
-    ) {
-        (Ok(i_val), Ok(j_val)) => {
-            if i_val < grid.len() && j_val < grid[0].len() {
-                Ok((i_val, j_val))
-            } else {
-                Err("At least one index is too high, therefore out of bounds")
-            }
-        }
-        _ => Err("At least one index is negative, therefore out of bounds"),
-    }
 }
 
 /// Return the grid coordinates of the starting position, at which point
