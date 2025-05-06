@@ -4,8 +4,12 @@ use std::collections::HashSet;
 const FILEPATH: &str = "inputs/day10.txt";
 const DIRECTIONS: [(isize, isize); 4] = [(-1, 0), (0, -1), (0, 1), (1, 0)];
 
-/// Compute the sum of the scores of all trailheads in the topographic trail map.
-fn trailhead_score_sum(trail_map: &Vec<Vec<u8>>) -> u32 {
+/// Compute the sum of the scores of all trailheads in the topographic trail map
+/// according to the provided scoring function.
+fn trailhead_sum(
+    trail_map: &Vec<Vec<u8>>,
+    scoring_fn: fn((usize, usize), &Vec<Vec<u8>>) -> u32,
+) -> u32 {
     trail_map
         .iter()
         .enumerate()
@@ -13,7 +17,7 @@ fn trailhead_score_sum(trail_map: &Vec<Vec<u8>>) -> u32 {
             row.iter().enumerate().filter_map(move |(j, &height)| {
                 // Each trailhead starts at height 0
                 if height == 0 {
-                    Some(trail_score((i, j), trail_map, &mut HashSet::new()))
+                    Some(scoring_fn((i, j), trail_map))
                 } else {
                     None
                 }
@@ -49,6 +53,22 @@ fn trail_score(
     score_sum
 }
 
+/// Return the number of trails passing through the given coordinates that lead to
+/// a 9-height position.
+fn trail_rating(coords: (usize, usize), trail_map: &Vec<Vec<u8>>) -> u32 {
+    let (i, j) = coords;
+    if trail_map[i][j] == 9 {
+        return 1;
+    }
+
+    DIRECTIONS
+        .iter()
+        .filter_map(|&dir| try_step(coords, dir, trail_map))
+        .filter(|&(i_next, j_next)| trail_map[i_next][j_next] == trail_map[i][j] + 1)
+        .map(|next_coords| trail_rating(next_coords, trail_map))
+        .sum()
+}
+
 fn get_trail_map() -> Vec<Vec<u8>> {
     lines_from_file(FILEPATH)
         .expect(&format!("Input file {FILEPATH} should exist"))
@@ -63,6 +83,14 @@ fn get_trail_map() -> Vec<Vec<u8>> {
 
 pub fn solve_part_1() {
     let trail_map = get_trail_map();
-    let sum = trailhead_score_sum(&trail_map);
+    let sum = trailhead_sum(&trail_map, |coords, trail_map| {
+        trail_score(coords, &trail_map, &mut HashSet::new())
+    });
     println!("Sum of the scores of all trailheads on topographic map: {sum}");
+}
+
+pub fn solve_part_2() {
+    let trail_map = get_trail_map();
+    let sum = trailhead_sum(&trail_map, trail_rating);
+    println!("Sum of the ratings of all trailheads on topographic map: {sum}");
 }
