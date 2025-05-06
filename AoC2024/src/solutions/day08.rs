@@ -2,7 +2,7 @@ use super::utils::{lines_from_file, try_step};
 use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
-const FILEPATH: &str = "inputs/day8.txt";
+const FILEPATH: &str = "inputs/day08.txt";
 
 /// Given a map of frequencies to their antenna locations, return the distinct locations
 /// of all antinodes across all frequencies according to the provided antinode location function.

@@ -1,7 +1,7 @@
 import utils
 from itertools import combinations
 
-image = utils.read_file('inputs/input11.txt')
+image = utils.read_file('inputs/day11.txt')
 
 def galaxy_locs():
     """

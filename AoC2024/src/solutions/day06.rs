@@ -1,7 +1,7 @@
 use super::utils::{lines_from_file, try_step};
 use std::collections::{HashMap, HashSet};
 
-const FILEPATH: &str = "inputs/day6.txt";
+const FILEPATH: &str = "inputs/day06.txt";
 
 /// Compute the set of distinct coordinates at which a single obstruction can be added
 /// to induce a loop in the path of the guard, given the starting position and direction.

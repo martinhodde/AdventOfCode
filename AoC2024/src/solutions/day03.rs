@@ -1,7 +1,7 @@
 use super::utils::lines_from_file;
 use regex::Regex;
 
-const FILEPATH: &str = "inputs/day3.txt";
+const FILEPATH: &str = "inputs/day03.txt";
 
 /// Find all expressions in the input that match the multiplication pattern,
 /// then sum the result of these multiplication programs.

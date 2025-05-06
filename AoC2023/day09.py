@@ -1,6 +1,6 @@
 import utils
 
-inputs = utils.read_file('inputs/input9.txt')
+inputs = utils.read_file('inputs/day09.txt')
 sequences = [list(map(int, line.split())) for line in inputs]
 
 def extrapolate(num_seq, backward=0):

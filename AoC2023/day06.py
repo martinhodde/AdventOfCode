@@ -1,7 +1,7 @@
 import utils
 import math
 
-inputs = utils.read_file('inputs/input6.txt')
+inputs = utils.read_file('inputs/day06.txt')
 
 def num_ways_to_win(T, D):
     """

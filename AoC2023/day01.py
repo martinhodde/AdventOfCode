@@ -1,6 +1,6 @@
 import utils
 
-inputs = utils.read_file('inputs/input1.txt')
+inputs = utils.read_file('inputs/day01.txt')
 
 digit_words = {
     # Overlapping digit word edge cases appearing in inputs

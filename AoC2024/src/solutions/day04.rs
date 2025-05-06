@@ -1,7 +1,7 @@
 use super::utils::{lines_from_file, try_step};
 use std::collections::HashMap;
 
-const FILEPATH: &str = "inputs/day4.txt";
+const FILEPATH: &str = "inputs/day04.txt";
 
 /// Part 1
 struct XmasSearch {

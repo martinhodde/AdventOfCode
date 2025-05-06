@@ -1,6 +1,6 @@
 use super::utils::lines_from_file;
 
-const FILEPATH: &str = "inputs/day2.txt";
+const FILEPATH: &str = "inputs/day02.txt";
 
 fn num_safe_records(lines: &Vec<String>, tolerate_bad_level: bool) -> u32 {
     let mut num_safe: u32 = 0;

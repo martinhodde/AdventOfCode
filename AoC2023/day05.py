@@ -1,7 +1,7 @@
 import bisect
 import utils
 
-inputs = utils.read_file('inputs/input5.txt')
+inputs = utils.read_file('inputs/day05.txt')
 
 def build_maps():
     """

@@ -2,7 +2,7 @@ use super::utils::lines_from_file;
 use counter::Counter;
 use std::collections::BinaryHeap;
 
-const FILEPATH: &str = "inputs/day1.txt";
+const FILEPATH: &str = "inputs/day01.txt";
 
 fn get_sorted_lists(lines: &Vec<String>) -> (Vec<u32>, Vec<u32>) {
     // Aggregate both input columns in binary heaps to maintain sorted order

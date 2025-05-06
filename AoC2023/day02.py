@@ -1,7 +1,7 @@
 import math
 import utils
 
-inputs = utils.read_file('inputs/input2.txt')
+inputs = utils.read_file('inputs/day02.txt')
 games = [line.replace(',', '').replace(';', '').split() for line in inputs]
 
 # Maximum configured cube number for each color

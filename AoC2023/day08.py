@@ -1,7 +1,7 @@
 import utils
 import math
 
-inputs = utils.read_file('inputs/input8.txt')
+inputs = utils.read_file('inputs/day08.txt')
 instructions = list(inputs[0].strip())
 graph = {line[:3] : (line[7:10], line[12:15]) for line in inputs[2:]}
 

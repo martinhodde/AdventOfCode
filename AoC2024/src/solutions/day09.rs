@@ -1,7 +1,7 @@
 use super::utils::lines_from_file;
 use std::cmp::max;
 
-static FILEPATH: &str = "inputs/day9.txt";
+static FILEPATH: &str = "inputs/day09.txt";
 
 /// Compute the checksum of the sequence of file ID numbers.
 fn checksum(filesystem: &Vec<i32>) -> u64 {

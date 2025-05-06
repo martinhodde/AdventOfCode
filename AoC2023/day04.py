@@ -1,6 +1,6 @@
 import utils
 
-inputs = utils.read_file('inputs/input4.txt')
+inputs = utils.read_file('inputs/day04.txt')
 
 def build_card_map():
     """

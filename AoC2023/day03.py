@@ -1,6 +1,6 @@
 import utils
 
-schematic = utils.read_file('inputs/input3.txt')
+schematic = utils.read_file('inputs/day03.txt')
 
 def build_bboxes():
     """
@@ -8,6 +8,7 @@ def build_bboxes():
     """
     part_num_bboxes = {}
     curr_part_num = ''
+    top, left = 0, 0
     for i, line in enumerate(schematic):
         for j, character in enumerate(line):
             if character.isdigit():

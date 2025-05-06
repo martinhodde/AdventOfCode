@@ -2,7 +2,7 @@ import utils
 from collections import Counter
 from functools import cmp_to_key
 
-inputs = utils.read_file('inputs/input7.txt')
+inputs = utils.read_file('inputs/day07.txt')
 hands = [line.split()[0] for line in inputs]
 bids = [int(line.split()[1]) for line in inputs]
 

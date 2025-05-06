@@ -1,6 +1,6 @@
 import utils
 
-grid = utils.read_file('inputs/input10.txt')
+grid = utils.read_file('inputs/day10.txt')
 
 def find_start():
     """
