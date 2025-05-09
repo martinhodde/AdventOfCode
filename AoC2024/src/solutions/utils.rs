@@ -27,6 +27,8 @@ pub fn get_solver_fn(day: u32, part: u32) -> Result<fn(), &'static str> {
         (9, 2) => Ok(solutions::day09::solve_part_2),
         (10, 1) => Ok(solutions::day10::solve_part_1),
         (10, 2) => Ok(solutions::day10::solve_part_2),
+        (11, 1) => Ok(solutions::day11::solve_part_1),
+        (11, 2) => Ok(solutions::day11::solve_part_2),
         _ => todo!("no solver for day {day} part {part}"),
     }
 }
